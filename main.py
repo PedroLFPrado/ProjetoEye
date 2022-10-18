@@ -3,11 +3,16 @@ import cv2
 import numpy as np
 import dlib
 from math import hypot
+import csv
 
 
+
+
+#inicializar video e quadro
 cap = cv2.VideoCapture(0)
 board = np.zeros((500, 1400), np.uint8)
 board[:] = 255
+
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -22,6 +27,11 @@ keys_set_2 = {0 : "O", 1: "P", 2: "Q", 3: "R", 4: "S",
                 5: "T", 6: "U", 7: "V", 8: "W", 9: "X", 
                 10: "Y", 11: "Z", 12: "_", 13: "<", 14: "<<"}
 
+emotes_set = {0 : "Happy", 1: "Sad", 2: "Cold", 3: "Hot", 4: "Sick", 
+                5: "Angry", 6: "Confused", 7: "Hurt", 8: "Sleepy", 9: "Relieved", 
+                10: "Hungry", 11: "Stressed", 12: "Bathroom", 13: "Surprised", 14: "<"}
+
+font = cv2.FONT_HERSHEY_DUPLEX
 
 def letter(letter_index, text, letter_light):
     #Teclas
@@ -39,22 +49,21 @@ def letter(letter_index, text, letter_light):
     height = 200
     th = 3 #thickness
    # Cfg Texto
-    font_letter = cv2.FONT_HERSHEY_DUPLEX
     font_scale = 5
     font_th = 8
-    text_size = cv2.getTextSize(text, font_letter, font_scale, font_th)[0]
+    text_size = cv2.getTextSize(text, font, font_scale, font_th)[0]
     width_text, height_text = text_size[0], text_size[1]
     text_x = int((width - width_text) / 2) + x
     text_y = int((height + height_text) / 2) + y
 
     if letter_light is True:
         cv2.rectangle(keyboard, (x + th, y + th), (x + width - th, y + height - th), (245, 239, 230), 2)
-        cv2.putText(keyboard, text, (text_x, text_y), font_letter, font_scale, (237, 228, 224), font_th)
+        cv2.putText(keyboard, text, (text_x, text_y), font, font_scale, (237, 228, 224), font_th)
     else:
         cv2.rectangle(keyboard, (x + th, y + th), (x + width - th, y + height - th), (102, 90, 72), 2)
-        cv2.putText(keyboard, text, (text_x, text_y), font_letter, font_scale, (133, 133, 133), font_th)
+        cv2.putText(keyboard, text, (text_x, text_y), font, font_scale, (133, 133, 133), font_th)
 
-font = cv2.FONT_HERSHEY_DUPLEX
+
 
 #Fazer menu de Direita e Esquerda
 def draw_menu():
@@ -80,6 +89,53 @@ def draw_main_menu():
     cv2.putText(keyboard, "TABLE", (30 + int(cols/3), 350), font, 2, (255, 248, 234), 3)
     cv2.putText(keyboard, "SAVED", (40 + int(cols*2/3), 300), font, 2, (255, 248, 234), 3)
     cv2.putText(keyboard, "PHRASES", (40 + int(cols*2/3), 350), font, 2, (255, 248, 234), 3)
+
+
+def draw_save_menu():
+    rows, cols, _ = keyboard.shape
+    th_lines = 4 # thickness lines
+    cv2.line(keyboard, (int(cols/2) - int(th_lines/2), 0),(int(cols/2) - int(th_lines/2), rows),
+            (255, 248, 234), th_lines)
+    cv2.putText(keyboard, "NEW", (65, 350), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "PHRASE", (65, 400), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "SAVED", (45 + int(cols/2), 350), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "PHRASES", (45 + int(cols/2), 400), font, 5, (255, 248, 234), 5)
+
+#Fazer o quadro de emoções
+def emote_menu(emote_index, text, letter_light):
+    #Teclas
+    if emote_index <= 4:
+        x = emote_index*200
+        y = 0
+    elif 4 < emote_index <= 9:
+        x = (emote_index-5)*200
+        y = 200
+    elif 9 < emote_index <= 14:
+        x = (emote_index-10)*200
+        y = 400
+
+    width = 200
+    height = 200
+    th = 3 #thickness
+   # Cfg Texto
+    font_scale = 5
+    font_th = 8
+    text_size = cv2.getTextSize(text, font, font_scale, font_th)[0]
+    width_text, height_text = text_size[0], text_size[1]
+    text_x = int((width - width_text) / 2) + x
+    text_y = int((height + height_text) / 2) + y
+
+    if letter_light is True:
+        cv2.rectangle(keyboard, (x + th, y + th), (x + width - th, y + height - th), (245, 239, 230), 2)
+        cv2.putText(keyboard, text, (text_x, text_y), font, font_scale, (237, 228, 224), font_th)
+    else:
+        cv2.rectangle(keyboard, (x + th, y + th), (x + width - th, y + height - th), (102, 90, 72), 2)
+        cv2.putText(keyboard, text, (text_x, text_y), font, font_scale, (133, 133, 133), font_th)
+
+def draw_saved_phrases():
+    rows, cols, _ = keyboard.shape
+    cv2.putText(keyboard, "SAVED", (65, 350), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "PHRASES", (45 + int(cols/2), 350), font, 5, (255, 248, 234), 5)
 
 
 #Saber onde está o meio do olho
@@ -163,11 +219,12 @@ def get_gaze_ratio(eye_points, facial_landmarks):
 
 
 # Counters
-frames = 0
+frames = 0 
 letter_index = 0
 blinking_frames = 0 #numero de frames que o usuario está piscando
 frames_to_blink = 6 #número de frames que usuario precisa estar com o olho fechado
 frames_active_letter = 9
+save_phrase = 0
 
 
 
@@ -175,7 +232,7 @@ frames_active_letter = 9
 text = ""
 keyboard_selected = "left"
 last_keyboard_selected = "left"
-select_keyboard_menu = 0 #0 - menu principal, 1 - menu, 2 - teclado, 3 - ?
+select_keyboard_menu = 0 #0 - menu principal, 1 - menu teclado, 2 - teclado, 3 - emoções, 4 - menu de frases, 5 - frases salvas
 keyboard_selection_frames = 0
 
 while True:
@@ -193,6 +250,16 @@ while True:
 
     if select_keyboard_menu is 1:
         draw_menu()
+    
+    if select_keyboard_menu is 4:
+        draw_save_menu()
+    
+    if select_keyboard_menu is 5:
+        draw_saved_phrases()
+
+    
+
+    
     
     if keyboard_selected == "left":
         keys_set = keys_set_1
@@ -233,31 +300,22 @@ while True:
                 #Direita
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 15:
-                    select_keyboard_menu = 4 # Menu de Frases salvas (Não feito)
+                    select_keyboard_menu = 4 # Menu de Frases salvas (Em construção)
                     frames = 0
-                    keyboard_selection_frames = 0
-                if keyboard_selected != last_keyboard_selected:
-                    last_keyboard_selected = keyboard_selected
                     keyboard_selection_frames = 0
             elif 0.9 < gaze_ratio < 1.7:
                 #Centro
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 15:
-                    select_keyboard_menu = 3 #Menu de emotes (Não feito)
+                    select_keyboard_menu = 3 #Menu de emotes (Em Construção)
                     frames = 0
-                    keyboard_selection_frames = 0
-                if keyboard_selected != last_keyboard_selected:
-                    last_keyboard_selected = keyboard_selected
                     keyboard_selection_frames = 0
             else:
                 #Esqueda
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15:
+                if keyboard_selection_frames == 15: 
                     select_keyboard_menu = 1 #Menu de teclado
                     frames = 0
-                    keyboard_selection_frames = 0
-                if keyboard_selected != last_keyboard_selected:
-                    last_keyboard_selected = keyboard_selected
                     keyboard_selection_frames = 0
 
 
@@ -265,7 +323,6 @@ while True:
 
 
             #Mostrar direção
-            
             if gaze_ratio <= 0.9:
                 keyboard_selected = "right"
                 keyboard_selection_frames += 1
@@ -286,10 +343,29 @@ while True:
                 if keyboard_selected != last_keyboard_selected:
                     last_keyboard_selected = keyboard_selected
                     keyboard_selection_frames = 0
+        
+        
+        elif select_keyboard_menu is 4:
+            #Mostrar direção
+            if gaze_ratio <= 0.9:
+                #Direita
+                keyboard_selection_frames += 1
+                if keyboard_selection_frames == 20:
+                    select_keyboard_menu = 1
+                    frames = 0
+                    keyboard_selection_frames = 0
+                    save_phrase = 1
+            else:
+                #Esquerda
+                keyboard_selection_frames += 1
+                if keyboard_selection_frames == 20:
+                    select_keyboard_menu = 5
+                    frames = 0
+                    keyboard_selection_frames = 0
 
 
-        elif select_keyboard_menu is 2:
-            if blinking_ratio > 5:
+        elif select_keyboard_menu is 2 or 3:
+            if blinking_ratio > 6.3:
                 #cv2.putText(frame, "Blinking", (50, 150), font, 4, (255, 0, 0), thickness=3)
                 blinking_frames += 1
                 frames -= 1
@@ -300,23 +376,27 @@ while True:
 
                 # Escrita da letra
                 if blinking_frames == frames_to_blink:
-                    if active_letter != "<" and active_letter != "_" and active_letter != "<<":
-                        text += active_letter
-                    if active_letter == "_":
-                        text += " "
-                    
-
-                    if active_letter != "<<":
-                        select_keyboard_menu = 1
+                    if select_keyboard_menu is 2:
+                        if active_letter != "<" and active_letter != "_" and active_letter != "<<":
+                            text += active_letter
+                        if active_letter == "_":
+                            text += " "
                         
-                    else:
-                        select_keyboard_menu = 0
-    
+
+                        if active_letter != "<<":
+                            select_keyboard_menu = 1
+                            #if save_phrase == 1:
+                                #Salvar = 1
+                                #COMANDO PARA SALVAR FRASE NO .CSV AQUI
+                                
+                        else:
+                            select_keyboard_menu = 0
+        
             else:
                 blinking_frames = 0  
 
 
-   # Mostrar Letras no Teclado
+   # Mostrar Letras no Teclado (Menu de teclado, menu 2)
     if select_keyboard_menu is 2:
         if frames == frames_active_letter:
             letter_index += 1
@@ -329,10 +409,14 @@ while True:
             else:
                 light = False
             letter(i, keys_set[i], light)
+        
+
+
+    
 
 
     # Mostrar o texto escrito no quadro
-    cv2.putText(board, text, (80, 100), font, 9, 0, 3)
+    cv2.putText(board, text, (100, 200), font, 7, 0, 4)
     
 
     # Blinking loading bar
@@ -347,6 +431,7 @@ while True:
     key = cv2.waitKey(1)
     if key == 27:
         break
+
 
 
 cap.release()
