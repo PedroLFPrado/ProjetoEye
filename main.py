@@ -10,8 +10,11 @@ import csv
 
 #inicializar video e quadro
 cap = cv2.VideoCapture(0)
-board = np.zeros((500, 1400), np.uint8)
+board = np.zeros((500, 1400), np.uint8) #quadro do teclado padrão
 board[:] = 255
+
+board2 = np.zeros((500, 1400), np.uint8) #quadro de frases salvas
+board2[:] = 255 
 
 
 detector = dlib.get_frontal_face_detector()
@@ -137,7 +140,7 @@ def emote_menu(emote_index, text, letter_light):
 
 def draw_saved_phrases(index, text, letter_light):
     xrec = 0
-    xtext = 50
+    
     if index == 0:    
         y = 0
     elif index == 1:
@@ -154,11 +157,11 @@ def draw_saved_phrases(index, text, letter_light):
     width = 1000
     height = 100
     th = 3 #thickness
-    font_scale = 3
-    font_th = 2
+    font_scale = 1
+    font_th = 1
 
-    text_x = int((width/ 2)) + xtext
-    text_y = int((height/ 2)) + y
+    text_x = 50
+    text_y = int((height/ 2)) + y + 30
 
     if letter_light is True:
         cv2.rectangle(keyboard, (xrec + th, y + th), (xrec + width - th, y + height - th), (245, 239, 230), 2)
@@ -378,11 +381,11 @@ while True:
         
         elif select_keyboard_menu == 4:
             #Mostrar direção
-            if gaze_ratio <= 1.4:
+            if gaze_ratio <= 1.1:
                 #Direita
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 20:
-                    select_keyboard_menu = 5 #MUDAR DEPOIS PARA 1
+                    select_keyboard_menu = 1 #MUDAR DEPOIS PARA 1
                     frames = 0
                     keyboard_selection_frames = 0
                     save_phrase = 1
@@ -416,9 +419,10 @@ while True:
 
                         if active_letter != "<<":
                             select_keyboard_menu = 1
-                            #if save_phrase == 1:
-                                #Salvar = 1
-                                #COMANDO PARA SALVAR FRASE NO .CSV AQUI
+                            if save_phrase == 1:
+                                with open('phrases.csv', 'a') as csv_file:
+                                    csv_writer = csv.writer(csv_file)
+                                    csv_writer.writerow(text)
                                 
                         else:
                             select_keyboard_menu = 0
@@ -463,7 +467,7 @@ while True:
                     light = True
                 else:
                     light = False
-                phrases[i] =  line[1]
+                phrases[i] =  line[0]
                 draw_saved_phrases(i, phrases[i], light)
                 i = i + 1
             
@@ -475,7 +479,7 @@ while True:
 
 
     # Mostrar o texto escrito no quadro
-    cv2.putText(board, text, (100, 200), font, 7, 0, 4)
+    cv2.putText(board, text, (75, 200), font, 2, 0, 2)
     
 
     # Blinking loading bar
@@ -486,6 +490,8 @@ while True:
     cv2.imshow("Frame", frame)
     cv2.imshow("Keyboard", keyboard)
     cv2.imshow("Board", board)
+    
+    
 
     key = cv2.waitKey(1)
     if key == 27:
