@@ -30,9 +30,13 @@ keys_set_2 = {0 : "O", 1: "P", 2: "Q", 3: "R", 4: "S",
                 5: "T", 6: "U", 7: "V", 8: "W", 9: "X", 
                 10: "Y", 11: "Z", 12: "_", 13: "<", 14: "<<"}
 
-emotes_set = {0 : "Happy", 1: "Sad", 2: "Cold", 3: "Hot", 4: "Sick", 
-                5: "Angry", 6: "Confused", 7: "Hurt", 8: "Sleepy", 9: "Relieved", 
-                10: "Hungry", 11: "Stressed", 12: "Bathroom", 13: "Surprised", 14: "<"}
+emotes_set = {0 : ":)", 1: ":(", 2: "Cold", 3: "Hot", 4: "Sick", 
+                5: ">:(", 6: ":S", 7: "Hurt", 8: "ZZZ", 9: ":/", 
+                10: "Food", 11: ":<", 12: "W.C", 13: ":O", 14: "<"}
+
+emotes_phrases = {0 : "I'm Happy", 1: "I'm Sad", 2: "It's Cold Here", 3: "It's Hot Here", 4: "I'm Feeling Sick", 
+                5: "I'm Angry", 6: "I'm Confused", 7: "I'm In Pain", 8: "I Gotta Sleep", 9: "I'm Bored", 
+                10: "I'm Hungry", 11: "I'm Stressed", 12: "I Gotta Use The Bathroom", 13: "I'm Surprised!", 14: "<"}
 
 phrases = {0 : "", 1: "", 2: "", 3: "", 4: "", 
                 5: ""}
@@ -254,9 +258,10 @@ def get_gaze_ratio(eye_points, facial_landmarks):
 frames = 0 
 letter_index = 0
 index = 0
+emote_index = 0
 blinking_frames = 0 #numero de frames que o usuario está piscando
 frames_to_blink = 6 #número de frames que usuario precisa estar com o olho fechado
-frames_active_letter = 16 #Controle da rapidez da letra ativa no momento (maior = letras passam mais rapido)
+frames_active_letter = 16 #Controle da rapidez da letra ativa no momento (maior = letras passam mais lentamente)
 save_phrase = 0 #Saber se o usuario quer salvar a frase escrita ou não
 
 
@@ -301,6 +306,8 @@ while True:
 
     active_letter = keys_set[letter_index]
     active_phrase = phrases[index]
+    active_emotion = emotes_set[emote_index]
+    active_emotion_phrase = emotes_phrases[emote_index]
 
     #Detector de face
     faces = detector(gray)
@@ -334,14 +341,14 @@ while True:
                 #Direita
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 15:
-                    select_keyboard_menu = 4 # Menu de Frases salvas (Em construção)
+                    select_keyboard_menu = 4 # Menu de Frases salvas
                     frames = 0
                     keyboard_selection_frames = 0
             elif 0.9 < gaze_ratio < 1.7:
                 #Centro
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 15:
-                    select_keyboard_menu = 3 #Menu de emotes (Em Construção)
+                    select_keyboard_menu = 3 #Menu de emotes
                     frames = 0
                     keyboard_selection_frames = 0
             else:
@@ -351,6 +358,7 @@ while True:
                     select_keyboard_menu = 1 #Menu de teclado
                     frames = 0
                     keyboard_selection_frames = 0
+                    save_phrase = 0
 
 
         elif select_keyboard_menu == 1:
@@ -385,17 +393,18 @@ while True:
                 #Direita
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 20:
-                    select_keyboard_menu = 1 #MUDAR DEPOIS PARA 1
+                    select_keyboard_menu = 5 #Saved Phrases
                     frames = 0
                     keyboard_selection_frames = 0
-                    save_phrase = 1
+                    
             else:
                 #Esquerda
                 keyboard_selection_frames += 1
                 if keyboard_selection_frames == 20:
-                    select_keyboard_menu = 5
+                    select_keyboard_menu = 1 #Teclado que salva
                     frames = 0
                     keyboard_selection_frames = 0
+                    save_phrase = 1
 
 
         elif select_keyboard_menu == 2 or select_keyboard_menu == 3 or select_keyboard_menu == 5:
@@ -417,15 +426,23 @@ while True:
                             text += " "
                         
 
-                        if active_letter != "<<":
-                            select_keyboard_menu = 1
+                        if active_letter == "<<":
                             if save_phrase == 1:
                                 with open('phrases.csv', 'a') as csv_file:
                                     csv_writer = csv.writer(csv_file)
                                     csv_writer.writerow(text)
-                                
+                            select_keyboard_menu = 0   
+                        else:
+                            select_keyboard_menu = 1
+                    
+                    elif select_keyboard_menu == 3:
+                        if active_emotion_phrase != "<":
+                            text += active_emotion_phrase
+                            select_keyboard_menu = 0
                         else:
                             select_keyboard_menu = 0
+
+ 
                     elif select_keyboard_menu == 5:
                         text += active_phrase
                         select_keyboard_menu = 0
@@ -450,6 +467,21 @@ while True:
                 light = False
             letter(i, keys_set[i], light)
     
+    
+    if select_keyboard_menu == 3:
+        if frames == frames_active_letter:
+            emote_index += 1
+            frames = 0
+        if emote_index == 15:
+            letter_index = 0
+        for i in range(15):
+            if i == emote_index:
+                light = True
+            else:
+                light = False
+            emote_menu(i, emotes_set[i], light)
+
+
     if select_keyboard_menu == 5:
             
         with open('phrases.csv', 'r') as csv_file:
@@ -467,10 +499,11 @@ while True:
                     light = True
                 else:
                     light = False
-                phrases[i] =  line[0]
+                phrases[i] = line[0]
                 draw_saved_phrases(i, phrases[i], light)
                 i = i + 1
-            
+                if i == 6:
+                    break      
                     
         
 
