@@ -30,13 +30,13 @@ keys_set_2 = {0 : "O", 1: "P", 2: "Q", 3: "R", 4: "S",
                 5: "T", 6: "U", 7: "V", 8: "W", 9: "X", 
                 10: "Y", 11: "Z", 12: "_", 13: "<", 14: "<<"}
 
-emotes_set = {0 : ":)", 1: ":(", 2: "Cold", 3: "Hot", 4: "Sick", 
-                5: ">:(", 6: ":S", 7: "Hurt", 8: "ZZZ", 9: ":/", 
-                10: "Food", 11: ":<", 12: "W.C", 13: ":O", 14: "<"}
+emotes_set = {0 : ":)", 1: ":(", 2: "Frio", 3: "Calor", 4: "Doente", 
+                5: ">:(", 6: ":S", 7: "Dor", 8: "ZZZ", 9: ":/", 
+                10: "Comer", 11: ":<", 12: "W.C", 13: ":O", 14: "<"}
 
-emotes_phrases = {0 : "I'm Happy", 1: "I'm Sad", 2: "It's Cold Here", 3: "It's Hot Here", 4: "I'm Feeling Sick", 
-                5: "I'm Angry", 6: "I'm Confused", 7: "I'm In Pain", 8: "I Gotta Sleep", 9: "I'm Bored", 
-                10: "I'm Hungry", 11: "I'm Stressed", 12: "I Gotta Use The Bathroom", 13: "I'm Surprised!", 14: "<"}
+emotes_phrases = {0 : "Estou Feliz", 1: "Estou Triste", 2: "Esta Frio", 3: "Esta Calor", 4: "Estou me sentindo Mal", 
+                5: "Estou Bravo", 6: "Estou Confuso", 7: "Estou com Dor", 8: "Preciso Dormir", 9: "Estou Entediado", 
+                10: "Estou com Fome", 11: "Estou Estressado", 12: "Preciso usar o Banheiro", 13: "Estou Surpreso!", 14: "<"}
 
 phrases = {0 : "", 1: "", 2: "", 3: "", 4: "", 
                 5: ""}
@@ -81,8 +81,8 @@ def draw_menu():
     th_lines = 4 # thickness lines
     cv2.line(keyboard, (int(cols/2) - int(th_lines/2), 0),(int(cols/2) - int(th_lines/2), rows),
             (255, 248, 234), th_lines)
-    cv2.putText(keyboard, "LEFT", (65, 350), font, 5, (255, 248, 234), 5)
-    cv2.putText(keyboard, "RIGHT", (45 + int(cols/2), 350), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "<", (65, 350), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, ">", (45 + int(cols/2), 350), font, 5, (255, 248, 234), 5)
 
 #Fazer o menu principal
 def draw_main_menu():
@@ -93,12 +93,15 @@ def draw_main_menu():
             (255, 248, 234), th_lines)
     cv2.line(keyboard, (int(cols*2/3) - int(th_lines*2/3), 0),(int(cols*2/3) - int(th_lines*2/3), rows),
             (255, 248, 234), th_lines)
-    cv2.putText(keyboard, "WRITE", (45, 300), font, 2, (255, 248, 234), 3)
-    cv2.putText(keyboard, "PHRASE", (45, 350), font, 2, (255, 248, 234), 3)
-    cv2.putText(keyboard, "FEELINGS", (30 + int(cols/3), 300), font, 2, (255, 248, 234), 3)
-    cv2.putText(keyboard, "TABLE", (30 + int(cols/3), 350), font, 2, (255, 248, 234), 3)
-    cv2.putText(keyboard, "SAVED", (40 + int(cols*2/3), 300), font, 2, (255, 248, 234), 3)
-    cv2.putText(keyboard, "PHRASES", (40 + int(cols*2/3), 350), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "TECLADO", (45, 300), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "DE", (45, 350), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "FRASES", (45, 400), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "TABELA", (30 + int(cols/3), 300), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "EMOTES", (30 + int(cols/3), 350), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "FRASES", (40 + int(cols*2/3), 300), font, 2, (255, 248, 234), 3)
+    cv2.putText(keyboard, "SALVAS", (40 + int(cols*2/3), 350), font, 2, (255, 248, 234), 3)
+
+
 
 
 def draw_save_menu():
@@ -106,10 +109,10 @@ def draw_save_menu():
     th_lines = 4 # thickness lines
     cv2.line(keyboard, (int(cols/2) - int(th_lines/2), 0),(int(cols/2) - int(th_lines/2), rows),
             (255, 248, 234), th_lines)
-    cv2.putText(keyboard, "NEW", (65, 350), font, 5, (255, 248, 234), 5)
-    cv2.putText(keyboard, "PHRASE", (65, 430), font, 5, (255, 248, 234), 5)
-    cv2.putText(keyboard, "SAVED", (45 + int(cols/2), 350), font, 5, (255, 248, 234), 5)
-    cv2.putText(keyboard, "PHRASES", (45 + int(cols/2), 430), font, 5, (255, 248, 234), 5)
+    cv2.putText(keyboard, "NOVA", (65, 300), font, 3, (255, 248, 234), 3)
+    cv2.putText(keyboard, "FRASE", (65, 370), font, 3, (255, 248, 234), 3)
+    cv2.putText(keyboard, "FRASES", (45 + int(cols/2), 300), font, 3, (255, 248, 234), 3)
+    cv2.putText(keyboard, "SALVAS", (45 + int(cols/2), 370), font, 3, (255, 248, 234), 3)
 
 #Fazer o quadro de emoções
 def emote_menu(emote_index, text, letter_light):
@@ -128,8 +131,8 @@ def emote_menu(emote_index, text, letter_light):
     height = 200
     th = 3 #thickness
    # Cfg Texto
-    font_scale = 5
-    font_th = 8
+    font_scale = 2
+    font_th = 4
     text_size = cv2.getTextSize(text, font, font_scale, font_th)[0]
     width_text, height_text = text_size[0], text_size[1]
     text_x = int((width - width_text) / 2) + x
@@ -191,7 +194,7 @@ def get_blinking_ratio(eye_points, facial_landmarks):
     hor_line_lenght = hypot((left_point[0] - right_point[0]), (left_point[1] - right_point[1]))
     ver_line_lenght = hypot((center_top[0] - center_bottom[0]), (center_top[1] - center_bottom[1]))
 
-    ratio = hor_line_lenght / ver_line_lenght
+    ratio = hor_line_lenght / (ver_line_lenght + 0.000000000001)
     return ratio
 
 #Fazer os circulos nos olhos na camera
@@ -261,7 +264,7 @@ index = 0
 emote_index = 0
 blinking_frames = 0 #numero de frames que o usuario está piscando
 frames_to_blink = 6 #número de frames que usuario precisa estar com o olho fechado
-frames_active_letter = 16 #Controle da rapidez da letra ativa no momento (maior = letras passam mais lentamente)
+frames_active_letter = 20 #Controle da rapidez da letra ativa no momento (maior = letras passam mais lentamente)
 save_phrase = 0 #Saber se o usuario quer salvar a frase escrita ou não
 
 
@@ -270,7 +273,7 @@ save_phrase = 0 #Saber se o usuario quer salvar a frase escrita ou não
 text = ""
 keyboard_selected = "left"
 last_keyboard_selected = "left"
-select_keyboard_menu = 0 #0 - menu principal, 1 - menu teclado, 2 - teclado, 3 - emoções, 4 - menu de frases, 5 - frases salvas
+select_keyboard_menu = 0 #1 - menu teclado, 2 - teclado, 3 - emoções, 4 - menu de frases, 5 - frases salvas
 keyboard_selection_frames = 0
 
 while True:
@@ -283,7 +286,7 @@ while True:
     # Desenhar espaço branco para barra de loading
     frame[rows - 50: rows, 0: cols] = (255, 255, 255)
 
-
+    #1 - menu teclado, 2 - teclado, 3 - emoções, 4 - menu de frases, 5 - frases salvas, 6 - MP1, 7 - MP2, 8 - MP3
     #Fazer os menus selecionados
     if select_keyboard_menu == 0:
         draw_main_menu()
@@ -295,9 +298,6 @@ while True:
         draw_save_menu()
     
 
-    
-
-    
     
     if keyboard_selected == "left":
         keys_set = keys_set_1
@@ -340,21 +340,21 @@ while True:
             if gaze_ratio <= 0.9:
                 #Direita
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15:
+                if keyboard_selection_frames == 50:
                     select_keyboard_menu = 4 # Menu de Frases salvas
                     frames = 0
                     keyboard_selection_frames = 0
-            elif 0.9 < gaze_ratio < 1.7:
+            elif 0.9 < gaze_ratio < 1.5:
                 #Centro
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15:
+                if keyboard_selection_frames == 50:
                     select_keyboard_menu = 3 #Menu de emotes
                     frames = 0
                     keyboard_selection_frames = 0
             else:
                 #Esqueda
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15: 
+                if keyboard_selection_frames == 50: 
                     select_keyboard_menu = 1 #Menu de teclado
                     frames = 0
                     keyboard_selection_frames = 0
@@ -368,7 +368,7 @@ while True:
             if gaze_ratio < 1:
                 keyboard_selected = "right"
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15:
+                if keyboard_selection_frames == 40:
                     select_keyboard_menu = 2
                     frames = 0
                     keyboard_selection_frames = 0
@@ -378,7 +378,7 @@ while True:
             else:
                 keyboard_selected = "left"
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 15:
+                if keyboard_selection_frames == 40:
                     select_keyboard_menu = 2
                     frames = 0
                     keyboard_selection_frames = 0
@@ -392,20 +392,19 @@ while True:
             if gaze_ratio <= 1.1:
                 #Direita
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 20:
-                    select_keyboard_menu = 5 #Saved Phrases
+                if keyboard_selection_frames == 50:
+                    select_keyboard_menu = 5 #frases já salvas
                     frames = 0
                     keyboard_selection_frames = 0
                     
             else:
                 #Esquerda
                 keyboard_selection_frames += 1
-                if keyboard_selection_frames == 20:
-                    select_keyboard_menu = 1 #Teclado que salva
-                    frames = 0
+                if keyboard_selection_frames == 50:
+                    select_keyboard_menu = 1 #Salvar frases
                     keyboard_selection_frames = 0
                     save_phrase = 1
-
+                
 
         elif select_keyboard_menu == 2 or select_keyboard_menu == 3 or select_keyboard_menu == 5:
             if blinking_ratio > 6.3:
@@ -430,7 +429,7 @@ while True:
                             if save_phrase == 1:
                                 with open('phrases.csv', 'a') as csv_file:
                                     csv_writer = csv.writer(csv_file)
-                                    csv_writer.writerow(text)
+                                    csv_writer.writerow([text])
                             select_keyboard_menu = 0   
                         else:
                             select_keyboard_menu = 1
@@ -473,7 +472,7 @@ while True:
             emote_index += 1
             frames = 0
         if emote_index == 15:
-            letter_index = 0
+            emote_index = 0
         for i in range(15):
             if i == emote_index:
                 light = True
